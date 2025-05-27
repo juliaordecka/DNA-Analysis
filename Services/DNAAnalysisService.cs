@@ -82,7 +82,7 @@ namespace DNA_Analyser.Services
             }
             return rna.ToString();
         }
-        //sprawdzenie na ktorej pozycji wystepuje dany podciag
+        //sprawdzenie na ktorej pozycji wystepuje dany podciag - zwraca pozycje pierwszego nukleotydu podciagu
         public List<int> FindPositionOfSubstring(string sequence, string substring)
         {
             List <int> positions = new List<int>();
@@ -90,8 +90,16 @@ namespace DNA_Analyser.Services
             {
                 return positions;
             }
+            int index = 0;
+            int foundIndex = sequence.IndexOf(substring, index);
 
-            
+            while (foundIndex != -1)
+            {
+                positions.Add(foundIndex+1);
+                index = foundIndex + 1;
+                foundIndex = sequence.IndexOf(substring, index);
+            }
+
             return positions;
         }
         

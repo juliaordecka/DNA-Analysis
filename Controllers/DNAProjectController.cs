@@ -137,5 +137,17 @@ namespace DNA_Analyser.Controllers
             return Ok(rna);
 
         }
+
+        [HttpGet("substring-positions/{id}")]
+        public async Task<ActionResult<List<int>>> GetSubstringPositions(int id, string substring)
+        { 
+            var sekwencja = await context.Sekwencje.FindAsync(id);
+            if (sekwencja == null)
+            {
+                return NotFound("Nie znaleziono sekwencji DNA o podanym ID.");
+            }
+            List <int> positions = analysis.FindPositionOfSubstring(sekwencja.Sequence, substring);
+            return Ok(positions);
+        }
     }
 }
