@@ -8,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 //builder.Services.AddScoped<DNAAnalysisService>();
-builder.Services.AddScoped<IDNAAnalysisService, DNAAnalysisService>();
+builder.Services.AddScoped<IDnaAnalysisService, DnaAnalysisService>();
+builder.Services.AddScoped<IDnaDataService, DnaDataService>();
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));

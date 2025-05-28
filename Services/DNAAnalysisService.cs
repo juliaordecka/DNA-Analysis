@@ -2,7 +2,7 @@
 
 namespace DNA_Analyser.Services
 {
-    public class DNAAnalysisService : IDNAAnalysisService
+    public class DnaAnalysisService : IDnaAnalysisService
     {
 
         //otrzymanie dlugosci sekwencji
@@ -63,7 +63,7 @@ namespace DNA_Analyser.Services
             return reverse.ToString();
         }
         //zamiana dna na rna
-        public string DNAtoRNA(string sequence)
+        public string ConvertDNAtoRNA(string sequence)
         {             
             if (string.IsNullOrEmpty(sequence))
             {
