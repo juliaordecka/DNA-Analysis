@@ -8,6 +8,6 @@ namespace DNA_Analyser.Data
     public class DataContext : DbContext
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
-        public DbSet<DnaSequence> Sekwencje { get; set; }
+        public DbSet<DnaSequence> Sequences { get; set; }
     }
 }

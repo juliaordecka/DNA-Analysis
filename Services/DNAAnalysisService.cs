@@ -85,7 +85,7 @@ namespace DNA_Analyser.Services
         //sprawdzenie na ktorej pozycji wystepuje dany podciag - zwraca pozycje pierwszego nukleotydu podciagu
         public List<int> FindPositionOfSubstring(string sequence, string substring)
         {
-            List <int> positions = new List<int>();
+            List<int> positions = [];
             if (string.IsNullOrEmpty(sequence) || string.IsNullOrEmpty(substring))
             {
                 return positions;
