@@ -2,10 +2,10 @@
 
 namespace DNA_Analyser.Services
 {
-    public class DNAAnalysisService
+    public class DNAAnalysisService : IDNAAnalysisService
     {
         //otrzymanie dlugosci sekwencji
-        public int GetLength(string sequence)
+        public int GetSequenceLength(string sequence)
         {
             if (string.IsNullOrEmpty(sequence))
             {

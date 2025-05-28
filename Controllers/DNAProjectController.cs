@@ -1,8 +1,10 @@
 ﻿using DNA_Analyser.Data;
+using DNA_Analyser.Entities;
 using DNA_Analyser.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using DNA_Analyser.DTOs;
 
 namespace DNA_Analyser.Controllers
 {
@@ -11,22 +13,22 @@ namespace DNA_Analyser.Controllers
     public class DNAProjectController : ControllerBase
     {
         private readonly DataContext context;
-        private readonly DNAAnalysisService analysis;
-        public DNAProjectController(DataContext context, DNAAnalysisService analysis)
+        private readonly IDNAAnalysisService analysis;
+        public DNAProjectController(DataContext context, IDNAAnalysisService analysis)
         {
             this.context = context;
             this.analysis = analysis;
         }
 
-        //Get - wprowadzone informacje o DNA przed analizą - cala lista
+        //get - wprowadzone informacje o DNA - cala lista
         [HttpGet]
-        public async Task<ActionResult<List<DNA1>>> Get()
+        public async Task<ActionResult<List<DnaSequence>>> Get()
         {
             return Ok(await context.Sekwencje.ToListAsync());
         }
         //Get - tylko jedna instancja
         [HttpGet("{id}")]
-        public async Task<ActionResult<DNA1>> Get(int id)
+        public async Task<ActionResult<DnaSequence>> Get(int id)
         {
             var sekwencja = await context.Sekwencje.FindAsync(id);
             if (sekwencja == null)
@@ -37,17 +39,24 @@ namespace DNA_Analyser.Controllers
         }
         //Post - dodanie nowej sekwencji DNA
         [HttpPost]
-        public async Task<ActionResult<List<DNA1>>> Post(DNA1 sekwencja)
+        public async Task<ActionResult<List<DnaSequence>>> Post(CreateDnaSequenceDTO request)
         {
+            var sekwencja = new DnaSequence
+            {
+                Name = request.Name,
+                Sequence = request.Sequence,
+                Description = request.Description
+            };
+
             context.Sekwencje.Add(sekwencja);
             await context.SaveChangesAsync();
-            return Ok(await context.Sekwencje.ToListAsync());
+            return Ok(sekwencja);
         }
         //Put - aktualizacja informacji dot. sekwencji DNA
         [HttpPut("{id}")]
-        public async Task<ActionResult<List<DNA1>>> Put(DNA1 request)
+        public async Task<ActionResult<List<DnaSequence>>> Put(int id, UpdateDnaSequenceDTO request)
         {
-            var sekwencja = await context.Sekwencje.FindAsync(request.Id);
+            var sekwencja = await context.Sekwencje.FindAsync(id);
             if (sekwencja == null)
             {
                 return NotFound("Nie znaleziono sekwencji DNA o podanym ID.");
@@ -56,13 +65,13 @@ namespace DNA_Analyser.Controllers
             sekwencja.Sequence = request.Sequence;
             sekwencja.Description = request.Description;
             await context.SaveChangesAsync();
-            return Ok(await context.Sekwencje.ToListAsync());
+            return Ok(sekwencja);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<List<DNA1>>> Delete(DNA1 request)
+        public async Task<ActionResult<List<DnaSequence>>> Delete(int id)
         {
-            var sekwencja = await context.Sekwencje.FindAsync(request.Id);
+            var sekwencja = await context.Sekwencje.FindAsync(id);
             if (sekwencja == null)
             {
                 return NotFound("Nie znaleziono sekwencji DNA o podanym ID.");
@@ -81,7 +90,7 @@ namespace DNA_Analyser.Controllers
             {
                 return NotFound("Nie znaleziono sekwencji DNA o podanym ID.");
             }
-            int length = analysis.GetLength(sekwencja.Sequence);
+            int length = analysis.GetSequenceLength(sekwencja.Sequence);
             return Ok(length);
         }
 
@@ -139,7 +148,7 @@ namespace DNA_Analyser.Controllers
         }
 
         [HttpGet("substring-positions/{id}")]
-        public async Task<ActionResult<List<int>>> GetSubstringPositions(int id, string substring)
+        public async Task<ActionResult<List<int>>> GetSubstringPositions(int id, [FromQuery] string substring)
         { 
             var sekwencja = await context.Sekwencje.FindAsync(id);
             if (sekwencja == null)
