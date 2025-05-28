@@ -4,6 +4,7 @@ namespace DNA_Analyser.Services
 {
     public class DNAAnalysisService : IDNAAnalysisService
     {
+
         //otrzymanie dlugosci sekwencji
         public int GetSequenceLength(string sequence)
         {
