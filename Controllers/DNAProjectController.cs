@@ -97,87 +97,143 @@ namespace DNA_Analyser.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var deletedseq = await _dataService.DeleteSequence(id);
-            if (deletedseq == true) return NoContent();
-            else return NoContent();
+            try
+            {
+                var deletedseq = await _dataService.DeleteSequence(id);
+                if (deletedseq == true) return NoContent();
+                else return NotFound("Nie istnieje sekwencja DNA o podanym ID.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while deleting sequence");
+                return StatusCode(500);
+            }
         }
 
         //Get - dlugosc sekwencji DNA
         [HttpGet("length/{id}")]
         public async Task<ActionResult<int>> GetLengthOfSequence(int id)
         {
-            var sekwencja = await _dataService.GetSequenceById(id);
-            if (sekwencja == null)
+            try
             {
-                return NotFound("Sequence of given id does not exist");
+                var sekwencja = await _dataService.GetSequenceById(id);
+                if (sekwencja == null)
+                {
+                    return NotFound("Sequence of given id does not exist");
+                }
+                int length = _analysis.GetSequenceLength(sekwencja.Sequence);
+                return Ok(length);
             }
-            int length = _analysis.GetSequenceLength(sekwencja.Sequence);
-            return Ok(length);
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error while obtaining length");
+                return StatusCode(500);
+            }
         }
 
         //Get - sekwencja komplementarna
         [HttpGet("complementary/{id}")]
         public async Task<ActionResult<string>> GetComplementarySequence(int id)
         {
-            var sekwencja = await _dataService.GetSequenceById(id);
-            if (sekwencja == null)
+            try
             {
-                return NotFound("Sequence of given id does not exist");
+                var sekwencja = await _dataService.GetSequenceById(id);
+                if (sekwencja == null)
+                {
+                    return NotFound("Sequence of given id does not exist");
+                }
+                string complementary = _analysis.GetComplementarySequence(sekwencja.Sequence);
+                return Ok(complementary);
             }
-            string complementary = _analysis.GetComplementarySequence(sekwencja.Sequence);
-            return Ok(complementary);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while obtaining complementary sequence");
+                return StatusCode(500);
+            }
         }
 
         //Get - sekwencja odwrotna
         [HttpGet("reverse/{id}")]
         public async Task<ActionResult<string>> GetReverseSequence(int id)
         {
-            var sekwencja = await _dataService.GetSequenceById(id);
-            if (sekwencja == null)
+            try
             {
-                return NotFound("Sequence of given id does not exist");
+                var sekwencja = await _dataService.GetSequenceById(id);
+                if (sekwencja == null)
+                {
+                    return NotFound("Sequence of given id does not exist");
+                }
+                string reverse = _analysis.ReverseSequence(sekwencja.Sequence);
+                return Ok(reverse);
             }
-            string reverse = _analysis.ReverseSequence(sekwencja.Sequence);
-            return Ok(reverse);
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error while obtaining reverse sequence");
+                return StatusCode(500);
+            }
         }
 
         //Get - sekwencja komplementarna i odwrotna
         [HttpGet("reverse-complementary/{id}")]
         public async Task<ActionResult<string>> GetReverseComplementarySequence(int id)
         {
-            var sekwencja = await _dataService.GetSequenceById(id);
-            if (sekwencja == null)
+            try
             {
-                return NotFound("Sequence of given id does not exist");
+                var sekwencja = await _dataService.GetSequenceById(id);
+                if (sekwencja == null)
+                {
+                    return NotFound("Sequence of given id does not exist");
+                }
+                string reverseComplementary = _analysis.GetComplementarySequence(_analysis.ReverseSequence(sekwencja.Sequence));
+                return Ok(reverseComplementary);
             }
-            string reverseComplementary = _analysis.GetComplementarySequence(_analysis.ReverseSequence(sekwencja.Sequence));
-            return Ok(reverseComplementary);
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error while obtaining reverse-complementary sequence");
+                return StatusCode(500);
+            }
         }
 
         //Get - zamiana dna na rna
         [HttpGet("rna/{id}")]
         public async Task<ActionResult<string>> GetRnaSequence(int id)
         {
-            var sekwencja = await _dataService.GetSequenceById(id);
-            if (sekwencja == null)
+            try
             {
-                return NotFound("Sequence of given id does not exist");
+                var sekwencja = await _dataService.GetSequenceById(id);
+                if (sekwencja == null)
+                {
+                    return NotFound("Sequence of given id does not exist");
+                }
+                string rna = _analysis.ConvertDNAtoRNA(sekwencja.Sequence);
+                return Ok(rna);
             }
-            string rna = _analysis.ConvertDNAtoRNA(sekwencja.Sequence);
-            return Ok(rna);
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error while obtaining RNA sequence");
+                return StatusCode(500);
+            }
 
         }
-
+        //get - pozycje danego podciagu wystepujacego w sekwencji
         [HttpGet("substring-positions/{id}")]
         public async Task<ActionResult<List<int>>> GetSubstringPositions(int id, [FromQuery] string substring)
         {
-            var sekwencja = await _dataService.GetSequenceById(id);
-            if (sekwencja == null)
+            try
             {
-                return NotFound("Sequence of given id does not exist");
+                var sekwencja = await _dataService.GetSequenceById(id);
+                if (sekwencja == null)
+                {
+                    return NotFound("Sequence of given id does not exist");
+                }
+                List<int> positions = _analysis.FindPositionOfSubstring(sekwencja.Sequence, substring);
+                return Ok(positions);
             }
-            List <int> positions = _analysis.FindPositionOfSubstring(sekwencja.Sequence, substring);
-            return Ok(positions);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while finding substring positions in sequence");
+                return StatusCode(500);
+            }
         }
     }
 }

@@ -9,17 +9,18 @@ namespace DNA_Analyser.Services
 
         public DnaAnalysisService(ILogger<DnaAnalysisService> logger)
         {
-            _logger = logger;
+            _logger = logger; //raczej niepotrzebne dla prostych operacji?
         }
 
         //otrzymanie dlugosci sekwencji
         public int GetSequenceLength(string sequence)
         {
-            if (string.IsNullOrEmpty(sequence))
-            {
-                return 0;
-            }
-            return sequence.Length;
+                if (string.IsNullOrEmpty(sequence))
+                {
+                    _logger.LogInformation("The sequence is null or empty");
+                    return 0;
+                }
+                return sequence.Length;
         }
 
         //otrzymanie sekwencji komplementarnej
@@ -48,7 +49,7 @@ namespace DNA_Analyser.Services
                         complementary.Append('C');
                         break;
                     default:
-                        throw new ArgumentException($"Invalid nucleotide: {nucleotide}");
+                        throw new ArgumentException($"Invalid nucleotide: {nucleotide}"); //czy to jest w ogole potrzebne
                 }
             }
             return complementary.ToString();
