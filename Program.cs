@@ -7,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Information);
 //builder.Services.AddScoped<DNAAnalysisService>();
 builder.Services.AddScoped<IDnaAnalysisService, DnaAnalysisService>();
 builder.Services.AddScoped<IDnaDataService, DnaDataService>();

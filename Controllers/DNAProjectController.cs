@@ -6,6 +6,7 @@ using DNA_Analyser.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace DNA_Analyser.Controllers
 {
@@ -15,10 +16,12 @@ namespace DNA_Analyser.Controllers
     {
         private readonly IDnaAnalysisService _analysis;
         private readonly IDnaDataService _sequenceService;
-        public DNAProjectController(IDnaAnalysisService analysis, IDnaDataService sequenceService)
+        private readonly ILogger<DNAProjectController> _logger;
+        public DNAProjectController(IDnaAnalysisService analysis, IDnaDataService sequenceService, ILogger<DNAProjectController> logger)
         {
             _analysis = analysis;
             _sequenceService = sequenceService;
+            _logger = logger;
         }
 
         //get - wprowadzone informacje o DNA - cala lista

@@ -4,6 +4,12 @@ namespace DNA_Analyser.Services
 {
     public class DnaAnalysisService : IDnaAnalysisService
     {
+        private readonly ILogger<DnaAnalysisService> _logger;
+
+        public DnaAnalysisService(ILogger<DnaAnalysisService> logger)
+        {
+            _logger = logger;
+        }
 
         //otrzymanie dlugosci sekwencji
         public int GetSequenceLength(string sequence)
