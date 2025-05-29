@@ -101,7 +101,7 @@ namespace DNA_Analyser.Controllers
             {
                 var deletedseq = await _dataService.DeleteSequence(id);
                 if (deletedseq == true) return NoContent();
-                else return NotFound("Nie istnieje sekwencja DNA o podanym ID.");
+                else return NotFound("DNA sequence of given ID does not exist.");
             }
             catch (Exception ex)
             {

@@ -97,6 +97,7 @@ namespace DNA_Analyser.Services
             List<int> positions = [];
             if (string.IsNullOrEmpty(sequence) || string.IsNullOrEmpty(substring))
             {
+                _logger.LogInformation("Empty sequence or substring provided");
                 return positions;
             }
             int index = 0;
@@ -107,6 +108,11 @@ namespace DNA_Analyser.Services
                 positions.Add(foundIndex+1);
                 index = foundIndex + 1;
                 foundIndex = sequence.IndexOf(substring, index);
+            }
+
+            if (positions.Count == 0)
+            {
+                _logger.LogInformation("Substring '{Substring}' is not present in the sequence", substring);
             }
 
             return positions;
