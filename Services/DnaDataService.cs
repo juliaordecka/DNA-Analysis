@@ -1,6 +1,7 @@
 ﻿using DNA_Analyser.Data;
 using DNA_Analyser.DTOs;
 using DNA_Analyser.Entities;
+using DNA_Analyser.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;

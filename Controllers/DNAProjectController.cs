@@ -2,7 +2,7 @@
 using DNA_Analyser.Data;
 using DNA_Analyser.DTOs;
 using DNA_Analyser.Entities;
-using DNA_Analyser.Services;
+using DNA_Analyser.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

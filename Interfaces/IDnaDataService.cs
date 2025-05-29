@@ -2,7 +2,7 @@
 using DNA_Analyser.Entities;
 using Microsoft.AspNetCore.Mvc;
 //rejestracja serwisu w Program.cs
-namespace DNA_Analyser.Services
+namespace DNA_Analyser.Interfaces
 {
 
     //tutaj operacje get, update, delete

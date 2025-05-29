@@ -1,4 +1,4 @@
-﻿namespace DNA_Analyser.Services
+﻿namespace DNA_Analyser.Interfaces
 {
     //operacje na string
     public interface IDnaAnalysisService

@@ -1,4 +1,5 @@
 using DNA_Analyser.Data;
+using DNA_Analyser.Interfaces;
 using DNA_Analyser.Services;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using DNA_Analyser.Interfaces;
+using System.Text;
 
 namespace DNA_Analyser.Services
 {
