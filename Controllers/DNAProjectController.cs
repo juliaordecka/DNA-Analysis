@@ -15,12 +15,12 @@ namespace DNA_Analyser.Controllers
     public class DNAProjectController : ControllerBase
     {
         private readonly IDnaAnalysisService _analysis;
-        private readonly IDnaDataService _sequenceService;
+        private readonly IDnaDataService _dataService;
         private readonly ILogger<DNAProjectController> _logger;
-        public DNAProjectController(IDnaAnalysisService analysis, IDnaDataService sequenceService, ILogger<DNAProjectController> logger)
+        public DNAProjectController(IDnaAnalysisService analysis, IDnaDataService dataService, ILogger<DNAProjectController> logger)
         {
             _analysis = analysis;
-            _sequenceService = sequenceService;
+            _dataService = dataService;
             _logger = logger;
         }
 
@@ -28,26 +28,51 @@ namespace DNA_Analyser.Controllers
         [HttpGet]
         public async Task<ActionResult<List<DnaSequence>>> Get()
         {
-            var sequences = await _sequenceService.GetAllSequences();
-            return Ok(sequences);
+            try
+            {
+                var sequences = await _dataService.GetAllSequences();
+                return Ok(sequences);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Retrieving sequences error");
+                return StatusCode(500);
+            }
         }
+
         //Get - tylko jedna instancja
         [HttpGet("{id}")]
         public async Task<ActionResult<DnaSequence>> Get(int id)
         {
-            var sekwencja = await _sequenceService.GetSequenceById(id);
-            if (sekwencja == null)
+            try
             {
-                return NotFound("Nie istnieje sekwencja DNA o podanym ID");
+                var sekwencja = await _dataService.GetSequenceById(id);
+                if (sekwencja == null)
+                {
+                    return NotFound("Sequence of given id does not exist");
+                }
+                return Ok(sekwencja);
             }
-            return Ok(sekwencja);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Retrieving sequence of with ID: {Id} error", id);
+                return StatusCode(500);
+            }
         }
         //Post - dodanie nowej sekwencji DNA
         [HttpPost]
         public async Task<ActionResult<List<DnaSequence>>> Post(CreateDnaSequenceDTO request)
         {
-            var sekwencja = await _sequenceService.CreateSequenceInstance(request);
-            return Ok(sekwencja);
+            try
+            {
+                var sekwencja = await _dataService.CreateSequenceInstance(request);
+                return Ok(sekwencja);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while creating new sequence");
+                return StatusCode(500);
+            }
         }
         //Put - aktualizacja informacji dot. sekwencji DNA
         [HttpPut("{id}")]
@@ -55,19 +80,24 @@ namespace DNA_Analyser.Controllers
         {
             try
             {
-                var sequence = await _sequenceService.UpdateSequenceById(id, request);
-                return Ok(sequence); 
+                var sekwencja = await _dataService.UpdateSequenceById(id, request);
+                if (sekwencja == null)
+                {
+                    return NotFound("Sequence of given id does not exist");
+                }
+                return Ok(sekwencja); 
             }
-            catch (ArgumentException)
+            catch (Exception ex)
             {
-                return NotFound("Nie istnieje sekwencja DNA o podanym ID"); 
+                _logger.LogError(ex, "Error while updating sequence");
+                return StatusCode(500);
             }
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var deletedseq = await _sequenceService.DeleteSequence(id);
+            var deletedseq = await _dataService.DeleteSequence(id);
             if (deletedseq == true) return NoContent();
             else return NoContent();
         }
@@ -76,10 +106,10 @@ namespace DNA_Analyser.Controllers
         [HttpGet("length/{id}")]
         public async Task<ActionResult<int>> GetLengthOfSequence(int id)
         {
-            var sekwencja = await _sequenceService.GetSequenceById(id);
+            var sekwencja = await _dataService.GetSequenceById(id);
             if (sekwencja == null)
             {
-                return NotFound("Nie istnieje sekwencja DNA o podanym ID");
+                return NotFound("Sequence of given id does not exist");
             }
             int length = _analysis.GetSequenceLength(sekwencja.Sequence);
             return Ok(length);
@@ -89,10 +119,10 @@ namespace DNA_Analyser.Controllers
         [HttpGet("complementary/{id}")]
         public async Task<ActionResult<string>> GetComplementarySequence(int id)
         {
-            var sekwencja = await _sequenceService.GetSequenceById(id);
+            var sekwencja = await _dataService.GetSequenceById(id);
             if (sekwencja == null)
             {
-                return NotFound("Nie istnieje sekwencja DNA o podanym ID");
+                return NotFound("Sequence of given id does not exist");
             }
             string complementary = _analysis.GetComplementarySequence(sekwencja.Sequence);
             return Ok(complementary);
@@ -102,10 +132,10 @@ namespace DNA_Analyser.Controllers
         [HttpGet("reverse/{id}")]
         public async Task<ActionResult<string>> GetReverseSequence(int id)
         {
-            var sekwencja = await _sequenceService.GetSequenceById(id);
+            var sekwencja = await _dataService.GetSequenceById(id);
             if (sekwencja == null)
             {
-                return NotFound("Nie istnieje sekwencja DNA o podanym ID");
+                return NotFound("Sequence of given id does not exist");
             }
             string reverse = _analysis.ReverseSequence(sekwencja.Sequence);
             return Ok(reverse);
@@ -115,10 +145,10 @@ namespace DNA_Analyser.Controllers
         [HttpGet("reverse-complementary/{id}")]
         public async Task<ActionResult<string>> GetReverseComplementarySequence(int id)
         {
-            var sekwencja = await _sequenceService.GetSequenceById(id);
+            var sekwencja = await _dataService.GetSequenceById(id);
             if (sekwencja == null)
             {
-                return NotFound("Nie istnieje sekwencja DNA o podanym ID");
+                return NotFound("Sequence of given id does not exist");
             }
             string reverseComplementary = _analysis.GetComplementarySequence(_analysis.ReverseSequence(sekwencja.Sequence));
             return Ok(reverseComplementary);
@@ -128,10 +158,10 @@ namespace DNA_Analyser.Controllers
         [HttpGet("rna/{id}")]
         public async Task<ActionResult<string>> GetRnaSequence(int id)
         {
-            var sekwencja = await _sequenceService.GetSequenceById(id);
+            var sekwencja = await _dataService.GetSequenceById(id);
             if (sekwencja == null)
             {
-                return NotFound("Nie istnieje sekwencja DNA o podanym ID");
+                return NotFound("Sequence of given id does not exist");
             }
             string rna = _analysis.ConvertDNAtoRNA(sekwencja.Sequence);
             return Ok(rna);
@@ -141,10 +171,10 @@ namespace DNA_Analyser.Controllers
         [HttpGet("substring-positions/{id}")]
         public async Task<ActionResult<List<int>>> GetSubstringPositions(int id, [FromQuery] string substring)
         {
-            var sekwencja = await _sequenceService.GetSequenceById(id);
+            var sekwencja = await _dataService.GetSequenceById(id);
             if (sekwencja == null)
             {
-                return NotFound("Nie istnieje sekwencja DNA o podanym ID");
+                return NotFound("Sequence of given id does not exist");
             }
             List <int> positions = _analysis.FindPositionOfSubstring(sekwencja.Sequence, substring);
             return Ok(positions);
